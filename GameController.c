@@ -25,6 +25,10 @@
   In applications it should be sufficient to process the return values GC8BIT_UP, GC8BIT_DOWN, GC8BIT_LEFT, GC8BIT_RIGHT,
   GC8BIT_SELECT, GC8BIT_START, GC8BIT_A_RELEASED and GC8BIT_B_RELEASED. For practical, low speed purposes a delay between polls
   of upto 100msec should be acceptable.
+
+  Copyright (c) 2024 Maarten Klarenbeek (https://github.com/mjklaren)
+  Distributed under the GPLv3 license
+
 */
 
 #include "ShiftRegister.c"

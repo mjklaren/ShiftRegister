@@ -9,6 +9,10 @@
   - Change "uin32_t" in the code below to "uint64_t".
 
   A buffersize of 64 bits will work on the RP2040, but will require an additional CPU cycle per request. 
+
+  Copyright (c) 2024 Maarten Klarenbeek (https://github.com/mjklaren)
+  Distributed under the GPLv3 license
+
 */
 
 
