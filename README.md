@@ -5,7 +5,7 @@ As the RP2040 processor is 32 bits the size of the buffers is limited to 4 octet
   - Change MAX_SIZEINOCTETS to 8
   - Change "uin32_t" in the code to "uint64_t".
 
-A buffersize of 64 bits will work on the RP2040, but will require an additional CPU cycle per request. 
+...and adjust your code accordingly. A buffersize of 64 bits will work on the RP2040, but will require an additional CPU cycle per request. 
 
 An example application is provided to control generic 8 bit controllers/"joysticks", like the legacy 8-bit Gameboy controller. Check the wiring diagram below:
 
