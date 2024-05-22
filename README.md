@@ -7,6 +7,8 @@ As the RP2040 processor is 32 bits the size of the buffers is limited to 4 octet
 
 A buffersize of 64 bits will work on the RP2040, but will require an additional CPU cycle per request. 
 
-An example application is provided to control generic 8 bit controllers/"joysticks", like the legacy 8-bit Gameboy controller.
+An example application is provided to control generic 8 bit controllers/"joysticks", like the legacy 8-bit Gameboy controller. Check the wiring diagram below:
+
+<img width="322" alt="Scherm­afbeelding 2024-05-22 om 10 17 35" src="https://github.com/mjklaren/ShiftRegister/assets/127024801/2a9b6e51-51ac-4120-90fc-d81baf549a61">
 
 The source code is distributed under the GPLv3 license.
