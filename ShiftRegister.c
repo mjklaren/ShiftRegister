@@ -1,4 +1,5 @@
 /*
+
   Library for using a shift registers on the Raspberry Pi Pico (originally developed on a SN74HC595N). This library supports
   SIPO (Serial-In-Parallel-Out; SHIFTREGISTER_OUTPUT-type), PISO (Parallel-In-Serial-Out; SHIFTREGISTER_INPUT-type) and hybrid
   (both SIPO and PISO). In a hybrid configuration both SIPO and PISO registers share the clock and latch lines. 
@@ -9,6 +10,13 @@
   - Change "uin32_t" in the code below to "uint64_t".
 
   A buffersize of 64 bits will work on the RP2040, but will require an additional CPU cycle per request. 
+
+  Delays for clock and latches can be adjusted by modifying ClockDelayUS and LatchDelayUS to meet the speed of devices;
+  for instance gamecontrollers use fast shiftregisters (values can be set to '1') while display controllers like the 
+  HD44780 require a value of 50 usec.
+
+  Output can be inverted by setting InvertOutput to 'true'. This can be useful for controlling relaisboards like the HW-316
+  that require the output to be inverted.
 
   Copyright (c) 2024 Maarten Klarenbeek (https://github.com/mjklaren)
   Distributed under the GPLv3 license
@@ -39,6 +47,9 @@ typedef struct
 
   // The buffer of the register - max 32 bits (4 cascaded shift registers). 
   uint32_t InputBuffer, OutputBuffer;
+
+  // Option to invert output
+  bool InvertOutput;
 } ShiftRegister;
 
 
@@ -66,7 +77,10 @@ void ShiftRegisterWrite(ShiftRegister *Register)
   uint32_t WriteMask=(1 << ((Register->SizeInOctets*8)-1));
   for(uint8_t counter=0; counter<(Register->SizeInOctets*8); counter++)
   {
-    gpio_put(Register->DataOutGPIO, ((WriteMask & Register->OutputBuffer)>0?1:0));
+    if(Register->InvertOutput==false)  // Do we need to invert the output?
+      gpio_put(Register->DataOutGPIO, ((WriteMask & Register->OutputBuffer)>0?1:0));
+    else
+      gpio_put(Register->DataOutGPIO, ((WriteMask & Register->OutputBuffer)>0?0:1));
     ShiftRegisterPulseClock(Register);
     WriteMask=(WriteMask>>1);
   }
@@ -101,7 +115,10 @@ void ShiftRegisterReadWrite(ShiftRegister *Register)
   for(uint8_t counter=0;counter<(Register->SizeInOctets*8);counter++)
   {
     // Write the next bit
-    gpio_put(Register->DataOutGPIO, ((WriteMask & Register->OutputBuffer)>0?1:0));
+    if(Register->InvertOutput==false)  // Do we need to invert the output?
+      gpio_put(Register->DataOutGPIO, ((WriteMask & Register->OutputBuffer)>0?1:0));
+    else
+      gpio_put(Register->DataOutGPIO, ((WriteMask & Register->OutputBuffer)>0?0:1));
     WriteMask=(WriteMask>>1);
 
     // Move to the next bit - pulse the clock
@@ -196,6 +213,7 @@ ShiftRegister *ShiftRegisterCreate(uint8_t Type, uint8_t ClockGPIO, uint8_t Data
   Register->SizeInOctets=SizeInOctets;
   Register->ClockDelayUS=SHIFTREGISTER_CLOCKDELAY_US;    // Default value; can be adjusted for slower devices.
   Register->LatchDelayUS=SHIFTREGISTER_LATCHDELAY_US;    // Default value; can be adjusted for slower devices.
+  Register->InvertOutput=false;                          // Default value; can be adjusted (e.g. for using relais boards).
   ShiftRegisterUpdate(Register);
   return(Register);
 }
